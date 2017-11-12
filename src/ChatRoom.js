@@ -2,25 +2,24 @@ import React, { Component } from 'react';
 import * as io from 'socket.io-client';
 const socket = io.connect();
 import axios from 'axios';
+import { connect } from 'react-redux';
 
-export default class ChatRoom extends Component {
-    constructor() {
-        super()
 
-        this.state = {
-            chatMessages: []
-        }
+class ChatRoom extends Component {
+    constructor(props) {
+        super(props)
 
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleChange = this.handleChange.bind(this)
+        this.renderChatMessages = this.renderChatMessages.bind(this)
     }
 
-    componentDidMount(){
-        console.log("props", this.props);
-        axios.get('/chatMessages')
-            .then(({data}) => {
-                console.log("our chatMessages", data);
-            })
+    renderChatMessages() {
+        return this.props.chatMessages.map((msg) => {
+            return (
+                <p><span className="chat-message-username">{msg.username}</span>: {msg.message}</p>
+            )
+        })
     }
 
     handleChange(e) {
@@ -38,11 +37,15 @@ export default class ChatRoom extends Component {
     }
 
     render() {
+        console.log("render of ChatRoom", this.props);
+        if (!this.props.chatMessages){
+            return (<div>Loading...</div>)
+        }
         return(
             <div>
                 <h1>Chatroom</h1>
                 <div id="chat-room">
-
+                    {this.renderChatMessages()}
                 </div>
                 <form action="">
                     <input name="username" onChange={this.handleChange} type="text" placeholder="username"/>
@@ -53,3 +56,11 @@ export default class ChatRoom extends Component {
         )
     }
 }
+
+const mapStateToProps = function(state) {
+    return {
+        chatMessages: state.chatMessages
+    }
+}
+
+export default connect(mapStateToProps)(ChatRoom);

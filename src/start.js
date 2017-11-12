@@ -1,22 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App'
-import * as io from 'socket.io-client';
-const socket = io.connect();
-let chatMessages;
+import ChatRoom from './ChatRoom'
 
-socket.on('welcome', function(data) {
-    console.log(data);
-    socket.emit('thanks', {
-      	message: 'Thank you. It is great to be here.'
-    });
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import reduxPromise from 'redux-promise';
+import { Router, Route, Link, IndexRoute, IndexRedirect, hashHistory, browserHistory } from 'react-router';
+import reducers from './reducers';
 
-    socket.on('chatMessages', (chatMessages) => {
-        chatMessages = chatMessages
-    })
-});
+const store = createStore(reducers, applyMiddleware(reduxPromise));
+
+const router = (
+    <Provider store={ store }>
+        <Router history={ browserHistory }>
+            <Route path="/" component={ App }>
+                <IndexRoute component={ ChatRoom } />
+            </Route>
+        </Router>
+    </Provider>
+)
 
 ReactDOM.render(
-    <App chatMessages={chatMessages} />,
+    router,
     document.querySelector('main')
 );

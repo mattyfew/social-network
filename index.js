@@ -6,39 +6,46 @@ const data = require('./secrets.json')
 const spicedPg = require('spiced-pg')
 const db = spicedPg(process.env.DATABASE_URL || `postgres:${data.psqlUser}:${data.psqlPass}@localhost:5432/social_network`);
 
+app.use(express.static('public'))
 
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 let onlineUsers = []
-let chatMessages = [{
-    message: "yoyo what up",
-    username: "Skrillex"
-}]
+let chatMessages = [
+    {
+        message: "yoyo what up",
+        username: "Skrillex"
+    },
+    {
+        message: "sup dudes",
+        username: "David Guetta"
+    },
+    {
+        message: "yo shit is wack",
+        username: "Vanilla Ice"
+    },
+]
 
 io.on('connection', (socket) => {
     console.log(`socket with the id ${socket.id} is now connected`);
     onlineUsers.push(socket.id)
-    console.log(onlineUsers);
+    socket.emit('chatMessages', chatMessages)
 
     socket.on('disconnect', () => {
         onlineUsers.splice(onlineUsers.indexOf(socket.id))
-        console.log(`socket with the id ${socket.id} is now disconnected`);
-        console.log(onlineUsers);
+        console.log(`socket with the id ${socket.id} is now disconnected`, onlineUsers);
+        socket.emit('userLeft', onlineUsers)
     });
 
-    socket.on('thanks', (data) => {
+    socket.on('userJoined', (data) => {
         console.log(data);
     });
 
     socket.on('chatMessage', (data) => {
-        console.log(data);
         chatMessages.push(data)
-        socket.emit('chatMessages', chatMessages)
+        console.log("inside emit chatMessage", chatMessages);
+        socket.emit('newMessage', chatMessages)
     })
-
-    socket.emit('welcome', {
-        message: 'Welome. It is nice to see you'
-    });
 });
 
 app.use(cookieSession({
