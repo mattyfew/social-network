@@ -28,6 +28,11 @@ class ChatRoom extends Component {
         })
     }
 
+    componentDidUpdate() {
+        console.log(this.elem);
+        this.elem.scrollTop = this.elem.scrollHeight
+    }
+
     handleSubmit(e) {
         e.preventDefault()
         socket.emit('chatMessage', {
@@ -43,7 +48,7 @@ class ChatRoom extends Component {
         return(
             <div>
                 <h1>Chatroom</h1>
-                <div id="chat-room">
+                <div id="chatroom" ref={elem => this.elem = elem}>
                     {this.renderChatMessages()}
                 </div>
                 <form action="">
