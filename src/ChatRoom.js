@@ -25,7 +25,7 @@ class ChatRoom extends Component {
     handleChange(e) {
         this.setState({
             [e.target.name]: e.target.value
-        }, () => console.log(this.state))
+        })
     }
 
     handleSubmit(e) {
@@ -37,7 +37,6 @@ class ChatRoom extends Component {
     }
 
     render() {
-        console.log("render of ChatRoom", this.props);
         if (!this.props.chatMessages){
             return (<div>Loading...</div>)
         }
@@ -58,6 +57,7 @@ class ChatRoom extends Component {
 }
 
 const mapStateToProps = function(state) {
+    console.log("something special", state);
     return {
         chatMessages: state.chatMessages
     }

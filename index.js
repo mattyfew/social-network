@@ -43,8 +43,7 @@ io.on('connection', (socket) => {
 
     socket.on('chatMessage', (data) => {
         chatMessages.push(data)
-        console.log("inside emit chatMessage", chatMessages);
-        socket.emit('newMessage', chatMessages)
+        socket.broadcast.emit('newMessage', chatMessages)
     })
 });
 
